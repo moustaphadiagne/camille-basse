@@ -41,30 +41,22 @@ Serial.println("configuration terminee.");
 void loop() 
 {
 voltage = pzem.voltage();
-if( isnan(voltage) ){
-        voltage=0;
-    } 
+//current = pzem.current();
+//power = pzem.power();
 frequency = pzem.frequency();
-if( isnan(frequency) ){
-        frequency=0;
-    } 
-//pf = pzem.pf();
+pf = pzem.pf();
 
 voltage2 = pzemm.voltage();
-if( isnan(voltage2) ){
-        voltage2=0;
-    } 
-//frequency2 = pzemm.frequency();
-
-//pf2 = pzemm.pf();
+//current2 = pzemm.current();
+//power2 = pzemm.power();
+frequency2 = pzemm.frequency();
+pf2 = pzemm.pf();
 
 voltage3 = pzemmm.voltage();
-
-if( isnan(voltage3) ){
-        voltage3=0;
-    } 
-//frequency3 = pzemmm.frequency();
-//pf3 = pzemmm.pf();
+//current3 = pzemmm.current();
+//power3 = pzemmm.power();
+frequency3 = pzemmm.frequency();
+pf3 = pzemmm.pf();
 emon1.calcVI(25,1000);         // Calculate all. No.of half wavelengths (crossings), time-out
 float supplyVoltage   = emon1.Vrms;             //la valeur moyenne du signal en analogique cad sortie transfo
 total=total+supplyVoltage;
@@ -104,7 +96,8 @@ Serial.println(voltage3);
 Serial.print("zmpt101b : ");  
 Serial.println(supplyVoltage);      //tension zmpt101b
 Serial.println(moy);
-Serial.println(frequency);
+Serial.println(frequency);Serial.println(frequency2);
+Serial.println(frequency3);
 //Serial.println(pf);//Serial.println(pf2);
 //Serial.println(pf3);
 Serial.println("-----------------------------");
