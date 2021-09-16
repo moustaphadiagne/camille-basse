@@ -77,7 +77,7 @@ voltage=voltage*sqrt(3);
 voltage2=voltage2*sqrt(3);
 voltage3=voltage3*sqrt(3);
 moy=moy*sqrt(3);
-InfluxData row("pompe_2");
+InfluxData row("pompe_1");
   row.addTag("location", "camille_basse");
   row.addValue("voltage", voltage);
   row.addValue("voltage2", voltage2);
@@ -89,7 +89,7 @@ InfluxData row("pompe_2");
 influx.write(row); //ecriture dans la base de donnees
 InfluxData row2("pompe_4");
 row2.addTag("location", "camille_basse");
-row2.addValue("voltage2", moy);
+row2.addValue("voltage", moy);
 influx.write(row2); 
 
 s=0;
