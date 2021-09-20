@@ -3,6 +3,10 @@
 #include "EmonLib.h"             // Include Emon Library
 #include <PZEM004Tv30.h>
 #include <InfluxDb.h>
+#include <Arduino.h>
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
 
 EnergyMonitor emon1;    //instance pour le ZMPT101B
 PZEM004Tv30 pzem(D5, D6);	//initialisation objet premier pzem GPIO 14 GPIO 12
@@ -10,6 +14,8 @@ PZEM004Tv30 pzemm(D7, D4); 	// deuxieme pzem GPIO 13 GPIO 2
 PZEM004Tv30 pzemmm(D1, D2);	//troisieme pzem GPIO 5 GPIO 4
 const char* ssid = "RUT955_DEDA";//Replace with your network SSID
 const char* password = "1234567890";//Replace with your network password
+
+AsyncWebServer server(80);
 int s=1;  //compteur
 float total=0;
 float moy =0;
@@ -36,10 +42,18 @@ while (WiFi.status() != WL_CONNECTED)
   }
 Serial.println(WiFi.localIP());  //affichage de l adresse ip de l esp
 influx.setDb("bnsp");  //connexion a la base de donnees 
+server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Hi! I am ESP 01..");
+  });
+
+  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
+  server.begin();
+  Serial.println("HTTP server started");
 Serial.println("configuration terminee.");
 }
 void loop() 
 {
+  AsyncElegantOTA.loop();
 voltage = pzem.voltage();
 if( isnan(voltage) ){
         voltage=0;
@@ -69,13 +83,16 @@ emon1.calcVI(25,1000);         // Calculate all. No.of half wavelengths (crossin
 float supplyVoltage   = emon1.Vrms;             //la valeur moyenne du signal en analogique cad sortie transfo
 total=total+supplyVoltage;
 moy=total/s;
-if(s ==40)
+if(s ==15)
 {Serial.print("moyenne ");  
  Serial.println(moy);
 
 voltage=voltage*sqrt(3);
 voltage2=voltage2*sqrt(3);
 voltage3=voltage3*sqrt(3);
+if (moy < 160){
+  moy=0;
+  }
 moy=moy*sqrt(3);
 InfluxData row("pompe_1");
   row.addTag("location", "camille_basse");
